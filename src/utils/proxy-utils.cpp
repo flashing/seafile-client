@@ -166,6 +166,8 @@ void ProxyRules::parseFromString(const QString &rules) {
 ProxyConfig ProxyConfig::getSystemProxyConfig() {
     ProxyConfig config;
 #ifdef Q_OS_WIN32
+    // refer to http://stackoverflow.com/questions/202547/how-do-i-find-out-the-browsers-proxy-settings
+    // refer to https://msdn.microsoft.com/en-us/library/windows/desktop/aa384096%28v=vs.85%29.aspx
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG ie_config = {0, 0, 0, 0};
     if (!WinHttpGetIEProxyConfigForCurrentUser(&ie_config)) {
         config.setSource(SourceSystemFailed);
@@ -189,6 +191,8 @@ ProxyConfig ProxyConfig::getSystemProxyConfig() {
         config.setPacUrl(QString::fromWCharArray(ie_config.lpszAutoConfigUrl));
     freeIEConfig(&ie_config);
 #elif defined(Q_OS_MAC)
+    // refer to https://developer.apple.com/library/mac/documentation/Networking/Reference/SCDynamicStoreCopySpecific/index.html#//apple_ref/c/func/SCDynamicStoreCopyProxies
+    // refer to http://stackoverflow.com/questions/13276195/mac-osx-how-can-i-grab-proxy-configuration-using-cocoa-or-even-pure-c-function
     CFDictionaryRef dict = SCDynamicStoreCopyProxies(NULL);
     config.setAutoDetect(getBoolFromDictionary(dict, kSCPropNetProxiesProxyAutoDiscoveryEnable, false));
     if (getBoolFromDictionary(dict, kSCPropNetProxiesProxyAutoConfigEnable, false)) {
@@ -232,7 +236,13 @@ ProxyConfig ProxyConfig::getSystemProxyConfig() {
     }
     CFRelease(dict);
 #elif defined(Q_OS_LINUX)
-    // most complicate part, to deal with gnome2, gnome3, kde2, kde3 and etc
+    // TODO add helpers to detect different linux desktops
+    // TODO add supports to read network proxy config according the different linux desktops
+    //
+    // TODO deal with gnome2, gnome3, kde2, kde3 and etc
+    // please refer to chromium source code,
+    // e.g. https://github.com/Chilledheart/chromium/blob/master/net/proxy/proxy_config_service_linux.h
+    // and https://github.com/Chilledheart/chromium/blob/master/net/proxy/proxy_config_service_linux.cc
 #endif
     config.setSource(SourceSystem);
     return config;
