@@ -1,4 +1,5 @@
 #include <QtGlobal>
+#include <QStringList>
 #include <QUrl>
 #include "utils-mac.h"
 
@@ -73,7 +74,11 @@ QNetworkProxy getFirstNetworkProxyFromString(const QString &proxy_uri_list) {
     // default scheme
     proxy_host_and_port.setScheme("http");
     proxy_host_and_port.setPort(defaultPortNumberForScheme(scheme));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     proxy_host_and_port.setAuthority(proxy_uri, QUrl::StrictMode);
+#else
+    proxy_host_and_port.setAuthority(proxy_uri);
+#endif
     if (!proxy_host_and_port.isValid())
         return QNetworkProxy();
 
