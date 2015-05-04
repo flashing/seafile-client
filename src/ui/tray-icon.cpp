@@ -35,6 +35,7 @@ extern "C" {
 // http://qt-project.org/doc/qt-4.8/exportedfunctions.html
 extern void qt_mac_set_dock_menu(QMenu *menu);
 #endif
+#include "utils/utils-mac.h"
 
 #if defined(Q_OS_LINUX)
 #include <QDBusConnection>
@@ -218,11 +219,14 @@ void SeafileTrayIcon::showMessage(const QString & title, const QString & message
     if (!is_repo_message)
         repo_id_ = QString();
 #ifdef Q_OS_MAC
-    Q_UNUSED(icon);
-    Q_UNUSED(millisecondsTimeoutHint);
-    QIcon info_icon(":/images/info.png");
-    TrayNotificationWidget* trayNotification = new TrayNotificationWidget(info_icon.pixmap(32, 32), title, message);
-    tnm->append(trayNotification);
+    if (!utils::mac::isOSXMountainLionOrGreater()) {
+        QIcon info_icon(":/images/info.png");
+        TrayNotificationWidget* trayNotification = new TrayNotificationWidget(info_icon.pixmap(32, 32), title, message);
+        tnm->append(trayNotification);
+        return;
+    }
+
+    QSystemTrayIcon::showMessage(title, message, icon, millisecondsTimeoutHint);
 #elif defined(Q_OS_LINUX)
     Q_UNUSED(icon);
     QVariantMap hints;
