@@ -39,10 +39,10 @@ const int kMarginBetweenAvatarAndNick = 10;
 
 const char *kNickColor = "#D8AC8F";
 const char *kNickColorHighlighted = "#D8AC8F";
-const char *kDescriptionColor = "#DFDFDF";
+const char *kRepoNameColor = "#D8AC8F";
+const char *kRepoNameColorHighlighted = "#D8AC8F";
+const char *kDescriptionColor = "#3F3F3F";
 const char *kDescriptionColorHighlighted = "#544D49";
-const char *kRepoNameColor = "#3F3F3F";
-const char *kRepoNameColorHighlighted = "#544D49";
 
 const int kNickFontSize = 16;
 const int kDescriptionFontSize = 13;
