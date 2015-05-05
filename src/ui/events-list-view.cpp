@@ -39,10 +39,14 @@ const int kMarginBetweenAvatarAndNick = 10;
 
 const char *kNickColor = "#D8AC8F";
 const char *kNickColorHighlighted = "#D8AC8F";
-const char *kDescriptionColor = "#3F3F3F";
+const char *kDescriptionColor = "#DFDFDF";
 const char *kDescriptionColorHighlighted = "#544D49";
+const char *kRepoNameColor = "#3F3F3F";
+const char *kRepoNameColorHighlighted = "#544D49";
+
 const int kNickFontSize = 16;
 const int kDescriptionFontSize = 13;
+const int kRepoNameWidth = 60;
 
 const char *kEventItemBackgroundColor = "white";
 const char *kEventItemBackgroundColorHighlighted = "#F9E0C7";
@@ -170,16 +174,31 @@ void EventItemDelegate::paint(QPainter *painter,
                       &time_rect);
     painter->restore();
 
+    // Paint repo name
+    painter->save();
+    QPoint event_desc_repo_pos = nick_rect.bottomLeft() + QPoint(0, 5);
+
+    const int desc_repo_width = kRepoNameWidth;
+
+    QRect event_desc_repo_rect(event_desc_repo_pos, QSize(desc_repo_width, kNickHeight));
+    painter->setFont(changeFontSize(painter->font(), kDescriptionFontSize));
+    painter->setPen(QColor(selected ? kRepoNameColorHighlighted : kRepoNameColor));
+    QString repo_name = event.repo_name + ", ";
+    painter->drawText(event_desc_repo_rect,
+                      Qt::AlignLeft | Qt::AlignTop,
+                      fitTextToWidth(repo_name, option.font, desc_repo_width),
+                      &event_desc_repo_rect);
+    painter->restore();
+
     // Paint description
     painter->save();
-    QPoint event_desc_pos = nick_rect.bottomLeft() + QPoint(0, 5);
+    QPoint event_desc_pos = nick_rect.bottomLeft() + QPoint(kRepoNameWidth, 5);
 
-    int desc_width = option.rect.width() - kAvatarWidth - kMarginBetweenAvatarAndNick - kPadding * 2;
+    const int desc_width = option.rect.width() - kAvatarWidth - kMarginBetweenAvatarAndNick - kPadding * 2 - kRepoNameWidth;
 
     QRect event_desc_rect(event_desc_pos, QSize(desc_width, kNickHeight));
     painter->setFont(changeFontSize(painter->font(), kDescriptionFontSize));
     painter->setPen(QColor(selected ? kDescriptionColorHighlighted : kDescriptionColor));
-
     QString desc = event.desc;
     desc.replace(QChar('\n'), QChar(' '));
     painter->drawText(event_desc_rect,
